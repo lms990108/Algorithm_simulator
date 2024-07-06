@@ -19,24 +19,24 @@ class ChartService:
         """
         fig, gnt = plt.subplots()
 
-        gnt.set_ylim(0, 30)
+        # Y축 크기 조정
+        gnt.set_ylim(0, 100)  # 충분히 큰 값으로 설정하여 공백을 추가
         gnt.set_xlim(0, sum(duration for _, duration in process_sequence))
 
         gnt.set_xlabel('Time')
         gnt.set_ylabel('Processes')
 
+        current_time = 0
+        process_height = 4  # 프로세스 블록 높이
+        space_between = 6   # 프로세스 블록 사이의 공백
+        label_dict = {}
         process_labels = []
         process_positions = []
-        current_time = 0
-        process_height = 10
-        label_dict = {}
 
-        for i, (process, duration) in enumerate(process_sequence):
+        for process, duration in process_sequence:
             if process not in label_dict:
-                label_dict[process] = len(label_dict) * process_height
-            gnt.broken_barh([(current_time, duration)], (label_dict[process], process_height - 1), facecolors=('tab:blue'))
-            process_labels.append(process)
-            process_positions.append(label_dict[process] + process_height / 2)
+                label_dict[process] = len(label_dict) * (process_height + space_between)
+            gnt.broken_barh([(current_time, duration)], (label_dict[process], process_height), facecolors=('black'))
             current_time += duration
 
         unique_labels = list(label_dict.keys())
@@ -46,4 +46,5 @@ class ChartService:
         gnt.set_yticklabels(unique_labels)
         gnt.grid(True)
 
+        plt.tight_layout()
         plt.savefig(output_path)
